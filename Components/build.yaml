@@ -1,0 +1,57 @@
+trigger:
+- main
+
+pool:
+  #vmImage: windows-latest
+  name: homenetwork
+
+variables:
+  solution: '**\*.sln'
+  BuildPlatform: 'x64'
+  BuildConfiguration: 'debug'
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 6.2.0'
+  inputs:
+    versionSpec: 6.2.0
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(Variables.solution)'
+
+- task: VSBuild@1
+  displayName: 'Build solution **\*.sln'
+  inputs:
+    solution: '$(Variables.solution)'
+    msbuildArgs: '-t:pack'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: '$(system.defaultworkingdirectory)'
+    Contents: '**\bin\$(BuildConfiguration)\**'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
+
+- task: NuGetCommand@2
+  displayName: 'NuGet pack'
+  inputs:
+    command: pack
+    versioningScheme: byPrereleaseNumber
+  enabled: false
+
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: push
+    publishVstsFeed: '84d4683d-d87e-446d-aabf-856773ea7763'

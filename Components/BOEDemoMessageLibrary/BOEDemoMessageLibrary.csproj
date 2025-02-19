@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId></PackageId>
+    <PackageVersion>1.0.15</PackageVersion>
+    <Description>This is my Message Printer component.</Description>
+    <PackageReleaseNotes>You can download the notes from XXXX.</PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
